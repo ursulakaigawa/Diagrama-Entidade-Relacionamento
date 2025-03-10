@@ -1,0 +1,72 @@
+CREATE DATABASE BibliotecaUniversidade;
+USE BibliotecaUniversidade;
+
+-- Tabela Aluno
+CREATE TABLE Aluno (
+    ra INT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    telefone VARCHAR(15)
+);
+
+-- Tabela Livro
+CREATE TABLE Livro (
+    isbn VARCHAR(13) PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    autor VARCHAR(100) NOT NULL,
+    paginas INT
+);
+
+-- Tabela Colaborador
+CREATE TABLE Colaborador (
+    cpf VARCHAR(11) PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    cargo VARCHAR(50) NOT NULL
+);
+
+-- Tabela Empréstimo
+CREATE TABLE Emprestimo (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    dataEmprestimo DATE NOT NULL,
+    dataDevolucao DATE NOT NULL,
+    livroIsbn VARCHAR(13),
+    colaboradorCpf VARCHAR(11),
+    alunoRa INT,
+    FOREIGN KEY (livroIsbn) REFERENCES Livro(isbn),
+    FOREIGN KEY (colaboradorCpf) REFERENCES Colaborador(cpf),
+    FOREIGN KEY (alunoRa) REFERENCES Aluno(ra)
+);
+
+-- Inserir Alunos
+INSERT INTO Aluno (ra, nome, email, telefone) VALUES
+(1, 'João Silva', 'joao.silva@email.com', '11987654321'),
+(2, 'Maria Oliveira', 'maria.oliveira@email.com', '11912345678');
+
+-- Inserir Livros
+INSERT INTO Livro (isbn, nome, autor, paginas) VALUES
+('9788533302273', 'Dom Casmurro', 'Machado de Assis', 256),
+('9788571640631', 'O Senhor dos Anéis', 'J.R.R. Tolkien', 1216);
+
+-- Inserir Colaboradores
+INSERT INTO Colaborador (cpf, nome, email, cargo) VALUES
+('12345678901', 'Carlos Souza', 'carlos.souza@email.com', 'Bibliotecário'),
+('98765432109', 'Ana Lima', 'ana.lima@email.com', 'Assistente');
+
+-- Inserir Empréstimos
+INSERT INTO Emprestimo (dataEmprestimo, dataDevolucao, livroIsbn, colaboradorCpf, alunoRa) VALUES
+('2023-10-01', '2023-10-15', '9788533302273', '12345678901', 1),
+('2023-10-02', '2023-10-16', '9788571640631', '98765432109', 2);
+
+
+SELECT 
+    e.id AS EmprestimoID,
+    a.nome AS Aluno,
+    l.nome AS Livro,
+    c.nome AS Colaborador,
+    e.dataEmprestimo,
+    e.dataDevolucao
+FROM Emprestimo e
+JOIN Aluno a ON e.alunoRa = a.ra
+JOIN Livro l ON e.livroIsbn = l.isbn
+JOIN Colaborador co ON e.colaboradorCpf = co.cpf;
